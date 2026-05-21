@@ -1,0 +1,84 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python src/prepare.py --input data/adult.csv --output 
+      data/processed.csv
+    deps:
+    - path: data/adult.csv
+      hash: md5
+      md5: 5d7c39d7b8804f071cdd1f2a7c460872
+      size: 3974305
+    - path: src/prepare.py
+      hash: md5
+      md5: 0dcf7eba8a96e2ece1882ad1deb5b75a
+      size: 5824
+    outs:
+    - path: data/processed.csv
+      hash: md5
+      md5: 06769c0a96e9ab07b8d9e2c1255a976b
+      size: 3328203
+  featurize:
+    cmd: python src/featurize.py --input data/processed.csv --output 
+      data/features.npz
+    deps:
+    - path: data/processed.csv
+      hash: md5
+      md5: 06769c0a96e9ab07b8d9e2c1255a976b
+      size: 3328203
+    - path: src/featurize.py
+      hash: md5
+      md5: ae1013edb9b250b11dc9520c8f0c8033
+      size: 5536
+    params:
+      params.yaml:
+        prepare.random_state: 42
+        prepare.test_size: 0.2
+    outs:
+    - path: data/features.npz
+      hash: md5
+      md5: 907a8938a9abde2616c0686e635fcd05
+      size: 433419
+  train:
+    cmd: python src/train.py --input data/features.npz --output 
+      models/model.joblib
+    deps:
+    - path: data/features.npz
+      hash: md5
+      md5: 907a8938a9abde2616c0686e635fcd05
+      size: 433419
+    - path: src/train.py
+      hash: md5
+      md5: 6332309541510ab77b94aa3cf5d1d868
+      size: 4965
+    params:
+      params.yaml:
+        train.max_depth: 10
+        train.model_type: random_forest
+        train.n_estimators: 200
+        train.random_state: 42
+    outs:
+    - path: models/model.joblib
+      hash: md5
+      md5: a59d8944bc8da064300498c9609be981
+      size: 10018361
+  evaluate:
+    cmd: python src/evaluate.py --model models/model.joblib --data 
+      data/features.npz --metrics metrics/scores.json
+    deps:
+    - path: data/features.npz
+      hash: md5
+      md5: 907a8938a9abde2616c0686e635fcd05
+      size: 433419
+    - path: models/model.joblib
+      hash: md5
+      md5: a59d8944bc8da064300498c9609be981
+      size: 10018361
+    - path: src/evaluate.py
+      hash: md5
+      md5: 34e732784fb0f404ae070c9785856ea6
+      size: 4284
+    outs:
+    - path: metrics/scores.json
+      hash: md5
+      md5: bce97528d89092855c73fc4981d43126
+      size: 103

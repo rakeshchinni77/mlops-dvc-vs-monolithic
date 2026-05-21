@@ -1,0 +1,206 @@
+################################################################################
+# MLOps Project .gitignore
+# Enterprise-grade configuration for Git + DVC integration
+################################################################################
+
+# ==============================================================================
+# PYTHON ENVIRONMENT & DEPENDENCIES
+# ==============================================================================
+venv/
+.venv/
+env/
+ENV/
+*.egg-info/
+*.egg
+dist/
+build/
+*.whl
+
+# Python compiled bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Python cache
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.hypothesis/
+
+# ==============================================================================
+# DATA & ARTIFACTS (Large files managed by DVC)
+# ==============================================================================
+
+# Processed/intermediate data
+data/processed.csv
+data/processed.csv.dvc.lock
+data/features.npz
+data/test_features.npz
+data/train_features.npz
+
+# Model artifacts & predictions
+models/
+models/model.joblib
+models/*.joblib
+*.pkl
+*.pickle
+
+# Metrics & evaluation results
+metrics/
+metrics/scores.json
+results/
+results/*.csv
+results/*.json
+
+# DVC cache (large, local only)
+.dvc/cache/
+.dvc/tmp/
+.dvc/plots/
+
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+notebooks/.ipynb_checkpoints/
+
+# Temporary notebook files
+*.ipynb_checkpoints
+
+# ==============================================================================
+# LOGS & TEMPORARY FILES
+# ==============================================================================
+
+logs/
+*.log
+*.log.*
+log/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+
+# ==============================================================================
+# ENVIRONMENT & CONFIGURATION
+# ==============================================================================
+
+# Environment variables (use .env.example for template)
+.env
+.env.local
+.env.*.local
+
+# IDE & Editor configurations
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ==============================================================================
+# DOCKER & CONTAINERIZATION
+# ==============================================================================
+
+# Docker volume mounts (if used locally)
+docker-compose.override.yml
+
+# ==============================================================================
+# EXPERIMENT TRACKING (DVC experiments)
+# ==============================================================================
+
+# DVC experiments directory (optional - can be large)
+# Uncomment if you want to keep experiments directory local only:
+# dvc_exps/
+
+# ==============================================================================
+# PYTHON PACKAGE MANAGEMENT
+# ==============================================================================
+
+# pip
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Setuptools
+setup.py.bak
+
+# ==============================================================================
+# IDE SPECIFIC
+# ==============================================================================
+
+# VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# ==============================================================================
+# TESTING & COVERAGE
+# ==============================================================================
+
+.pytest_cache/
+.tox/
+.coverage
+htmlcov/
+coverage.xml
+
+# ==============================================================================
+# SYSTEM FILES
+# ==============================================================================
+
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ==============================================================================
+# PROJECT SPECIFIC
+# ==============================================================================
+
+# Monolithic training artifacts (should be in models/)
+train_monolithic_output/
+model.joblib
+metrics.json
+
+# Experiment results (but keep the metadata!)
+experiment_results.csv
+runs/
+
+# ==============================================================================
+# SECURITY & CREDENTIALS
+# ==============================================================================
+
+# AWS credentials
+.aws/
+.aws/credentials
+
+# Google Drive authentication tokens
+.gdrive_token
+.gdrive_auth
+
+# SSH keys
+*.pem
+*.pub
+
+# ==============================================================================
+# BUILD ARTIFACTS
+# ==============================================================================
+
+*.o
+*.a
+*.so
+*.dylib
