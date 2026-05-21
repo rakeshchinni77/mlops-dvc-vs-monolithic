@@ -48,6 +48,13 @@ jobs:
           python -m pip install -r requirements.txt
           python -m pip check
 
+      - name: Download UCI Adult dataset
+        run: |
+          set -euo pipefail
+          mkdir -p data
+          curl -fsSL "https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data" -o data/adult.csv
+          test -s data/adult.csv
+
       - name: Verify DVC availability
         run: |
           set -euo pipefail
