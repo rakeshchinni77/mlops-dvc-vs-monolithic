@@ -23,12 +23,12 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - name: Checkout source
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Set up Python 3.10 with pip cache
+      - name: Set up Python 3.10
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
@@ -39,16 +39,16 @@ jobs:
         run: |
           set -euo pipefail
           python --version
-          python -c "import sys; print(sys.version)"
+          python -c "import sys; assert sys.version_info[:2] == (3, 10)"
 
-      - name: Install Python dependencies
+      - name: Install dependencies
         run: |
           set -euo pipefail
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install -r requirements.txt
           python -m pip check
 
-      - name: Confirm DVC with Google Drive support
+      - name: Confirm DVC availability
         run: |
           set -euo pipefail
           dvc --version
@@ -70,12 +70,6 @@ jobs:
           set -euo pipefail
           dvc repro
 
-      - name: Validate DVC cache behavior
-        run: |
-          set -euo pipefail
-          dvc repro 2>&1 | tee dvc_repro.log
-          grep -E "Stage 'prepare' didn't change, skipping|Stage 'featurize' didn't change, skipping|Stage 'train' is cached - skipping run|Stage 'evaluate' is cached - skipping run" dvc_repro.log
-
       - name: Validate DVC artifacts
         run: |
           set -euo pipefail
@@ -83,4 +77,14 @@ jobs:
           test -f metrics/scores.json
           test -f data/processed.csv
           test -f data/features.npz
+
+      - name: Validate DVC cache behavior
+        run: |
+          set -euo pipefail
+          dvc repro 2>&1 | tee dvc_repro.log
+          grep -E "Stage 'prepare' didn't change, skipping|Stage 'featurize' didn't change, skipping|Stage 'train' is cached - skipping run|Stage 'evaluate' is cached - skipping run" dvc_repro.log
+
+      - name: Confirm clean DVC status
+        run: |
+          set -euo pipefail
           dvc status --quiet
