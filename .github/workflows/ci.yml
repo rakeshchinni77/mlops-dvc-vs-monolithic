@@ -48,7 +48,7 @@ jobs:
           python -m pip install -r requirements.txt
           python -m pip check
 
-      - name: Confirm DVC availability
+      - name: Verify DVC availability
         run: |
           set -euo pipefail
           dvc --version
