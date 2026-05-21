@@ -2,37 +2,85 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main, master]
   pull_request:
-    branches: [main, master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONUNBUFFERED: "1"
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  DVC_NO_ANALYTICS: "1"
 
 jobs:
-  test:
+  validate:
+    name: Validate Monolithic and DVC Pipelines
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Checkout source
+        uses: actions/checkout@v4
         with:
-          python-version: "3.11"
+          fetch-depth: 0
 
-      - name: Install dependencies
+      - name: Set up Python 3.10 with pip cache
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Verify Python version
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          set -euo pipefail
+          python --version
+          python -c "import sys; print(sys.version)"
 
-      - name: Initialize DVC
-        run: dvc init --no-scm
+      - name: Install Python dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install -r requirements.txt
+          python -m pip check
 
-      - name: Run monolithic script
-        run: python train_monolithic.py
+      - name: Confirm DVC with Google Drive support
+        run: |
+          set -euo pipefail
+          dvc --version
+          python -c "import dvc; print(dvc.__version__)"
+
+      - name: Run monolithic training pipeline
+        run: |
+          set -euo pipefail
+          python train_monolithic.py
+
+      - name: Validate monolithic artifacts
+        run: |
+          set -euo pipefail
+          test -f model.joblib
+          test -f metrics.json
 
       - name: Run DVC pipeline
-        run: dvc repro
-
-      - name: Check artifacts
         run: |
-          ls -la models/model.joblib
-          ls -la metrics/scores.json
+          set -euo pipefail
+          dvc repro
+
+      - name: Validate DVC cache behavior
+        run: |
+          set -euo pipefail
+          dvc repro 2>&1 | tee dvc_repro.log
+          grep -E "Stage 'prepare' didn't change, skipping|Stage 'featurize' didn't change, skipping|Stage 'train' is cached - skipping run|Stage 'evaluate' is cached - skipping run" dvc_repro.log
+
+      - name: Validate DVC artifacts
+        run: |
+          set -euo pipefail
+          test -f models/model.joblib
+          test -f metrics/scores.json
+          test -f data/processed.csv
+          test -f data/features.npz
+          dvc status --quiet
