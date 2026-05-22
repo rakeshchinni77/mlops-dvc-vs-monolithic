@@ -10,6 +10,8 @@ python-dotenv==0.21.0
 
 # MLOps & Experiment Tracking
 dvc[gdrive]==3.30.3
+dulwich==0.21.7
+pygit2==1.13.3
 
 # Visualization
 matplotlib==3.8.2

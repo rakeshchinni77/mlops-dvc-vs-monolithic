@@ -1,33 +1,33 @@
-'data\adult.csv.dvc' didn't change, skipping
+'data/adult.csv.dvc' didn't change, skipping
 Stage 'prepare' didn't change, skipping
 Stage 'featurize' didn't change, skipping
 Running stage 'train':
 > python src/train.py --input data/features.npz --output models/model.joblib
-2026-05-21 18:54:14,726 - INFO - === TRAIN STAGE START ===
-2026-05-21 18:54:14,727 - INFO - Loading features artifact: data\features.npz
-2026-05-21 18:54:14,743 - INFO - Feature shapes: X_train=(24129, 14), y_train=(24129,)
-2026-05-21 18:54:14,743 - INFO - Reading params from: params.yaml
-2026-05-21 18:54:14,745 - INFO - Loaded train params: {'model_type': 'random_forest', 'n_estimators': 200, 'max_depth': 10, 'random_state': 42}
-2026-05-21 18:54:14,745 - INFO - Instantiating RandomForestClassifier: n_estimators=200, max_depth=10, random_state=42
-2026-05-21 18:54:14,745 - INFO - Starting model.fit()
-2026-05-21 18:54:15,827 - INFO - Model training completed
-2026-05-21 18:54:15,905 - INFO - Saved model to models\model.joblib (size: 9.55 MB)
-2026-05-21 18:54:15,906 - INFO - === TRAIN STAGE COMPLETED SUCCESSFULLY ===
+2026-05-22 03:25:11,581 - INFO - === TRAIN STAGE START ===
+2026-05-22 03:25:11,582 - INFO - Loading features artifact: data/features.npz
+2026-05-22 03:25:11,661 - INFO - Feature shapes: X_train=(24129, 14), y_train=(24129,)
+2026-05-22 03:25:11,662 - INFO - Reading params from: params.yaml
+2026-05-22 03:25:11,672 - INFO - Loaded train params: {'model_type': 'random_forest', 'n_estimators': 974, 'max_depth': 10, 'random_state': 42}
+2026-05-22 03:25:11,673 - INFO - Instantiating RandomForestClassifier: n_estimators=974, max_depth=10, random_state=42
+2026-05-22 03:25:11,674 - INFO - Starting model.fit()
+2026-05-22 03:25:19,359 - INFO - Model training completed
+2026-05-22 03:25:23,940 - INFO - Saved model to models/model.joblib (size: 46.12 MB)
+2026-05-22 03:25:23,941 - INFO - === TRAIN STAGE COMPLETED SUCCESSFULLY ===
 Updating lock file 'dvc.lock'
 
 Running stage 'evaluate':
 > python src/evaluate.py --model models/model.joblib --data data/features.npz --metrics metrics/scores.json
-2026-05-21 18:54:17,730 - INFO - === EVALUATE STAGE START ===
-2026-05-21 18:54:17,730 - INFO - Loading model: models\model.joblib
-2026-05-21 18:54:18,023 - INFO - Loading test data artifact: data\features.npz
-2026-05-21 18:54:18,040 - INFO - Loaded test arrays: X_test=(6033, 14), y_test=(6033,)
-2026-05-21 18:54:18,040 - INFO - Generating predictions
-2026-05-21 18:54:18,160 - INFO - Generating prediction probabilities
-2026-05-21 18:54:18,270 - INFO - Evaluating metrics
-2026-05-21 18:54:18,280 - INFO - Computed metrics: {'accuracy': 0.8524780374606332, 'auc': 0.9134439595142914, 'f1_macro': 0.7777034678353412}
-2026-05-21 18:54:18,280 - INFO - Saving metrics to: metrics\scores.json
-2026-05-21 18:54:18,282 - INFO - Metrics saved successfully
-2026-05-21 18:54:18,282 - INFO - === EVALUATE STAGE COMPLETED SUCCESSFULLY ===
+2026-05-22 03:25:32,520 - INFO - === EVALUATE STAGE START ===
+2026-05-22 03:25:32,521 - INFO - Loading model: models/model.joblib
+2026-05-22 03:25:37,462 - INFO - Loading test data artifact: data/features.npz
+2026-05-22 03:25:37,536 - INFO - Loaded test arrays: X_test=(6033, 14), y_test=(6033,)
+2026-05-22 03:25:37,537 - INFO - Generating predictions
+2026-05-22 03:25:38,399 - INFO - Generating prediction probabilities
+2026-05-22 03:25:39,182 - INFO - Evaluating metrics
+2026-05-22 03:25:39,194 - INFO - Computed metrics: {'accuracy': 0.8524780374606332, 'auc': 0.913769355124529, 'f1_macro': 0.778088893885115}
+2026-05-22 03:25:39,194 - INFO - Saving metrics to: metrics/scores.json
+2026-05-22 03:25:39,209 - INFO - Metrics saved successfully
+2026-05-22 03:25:39,209 - INFO - === EVALUATE STAGE COMPLETED SUCCESSFULLY ===
 Updating lock file 'dvc.lock'
 
 To track the changes with git, run:

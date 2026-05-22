@@ -3,7 +3,7 @@ prepare:
   test_size: 0.2
 
 train:
-  model_type: "random_forest"
-  n_estimators: 200
+  model_type: random_forest
+  n_estimators: 150
   max_depth: 10
   random_state: 42

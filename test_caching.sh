@@ -8,8 +8,7 @@ set -euo pipefail
 readonly PARAMS_FILE="params.yaml"
 readonly LOG_FILE="repro_log.txt"
 readonly BACKUP_FILE="${PARAMS_FILE}.bak.caching-test"
-readonly ORIGINAL_N_ESTIMATORS=100
-readonly UPDATED_N_ESTIMATORS=200
+
 
 log() {
   printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*"
@@ -23,8 +22,12 @@ require_command() {
 }
 
 resolve_dvc_command() {
+  if command -v dvc >/dev/null 2>&1; then
+    command -v dvc
+    return 0
+  fi
+
   local candidates=(
-    "./venv/Scripts/dvc.exe"
     "./venv/Scripts/dvc"
     "./venv/bin/dvc"
   )
@@ -36,11 +39,6 @@ resolve_dvc_command() {
       return 0
     fi
   done
-
-  if command -v dvc >/dev/null 2>&1; then
-    command -v dvc
-    return 0
-  fi
 
   return 1
 }
@@ -71,15 +69,32 @@ modify_params() {
   fi
 
   "$python_bin" - <<'PY'
+import secrets
+import re
+import time
 from pathlib import Path
 
 path = Path("params.yaml")
 text = path.read_text(encoding="utf-8")
-old = '  n_estimators: 100\n'
-new = '  n_estimators: 200\n'
-if old not in text:
-    raise SystemExit("Expected n_estimators value not found in params.yaml")
-path.write_text(text.replace(old, new, 1), encoding="utf-8")
+match = re.search(r"(?m)^(\s*n_estimators:\s*)(\d+)\s*$", text)
+if not match:
+    raise SystemExit("Could not find train.n_estimators in params.yaml")
+
+old_value = int(match.group(2))
+
+# Keep the value in a reasonable training range while making it fresh on each run.
+new_value = 900 + ((time.time_ns() + secrets.randbelow(100)) % 100)
+if new_value == old_value:
+    new_value = 900 + ((new_value - 900 + 1) % 100)
+
+updated = re.sub(
+    r"(?m)^(\s*n_estimators:\s*)\d+\s*$",
+    rf"\g<1>{new_value}",
+    text,
+    count=1,
+)
+path.write_text(updated, encoding="utf-8")
+print(f"{old_value}->{new_value}")
 PY
 }
 
@@ -120,8 +135,9 @@ main() {
   log "Backing up $PARAMS_FILE"
   backup_params
 
-  log "Updating train.n_estimators from $ORIGINAL_N_ESTIMATORS to $UPDATED_N_ESTIMATORS"
-  modify_params
+  local replacement
+  replacement="$(modify_params)"
+  log "Updated train.n_estimators: $replacement"
 
   log "Running dvc repro again and capturing output to $LOG_FILE"
   "$DVC_BIN" repro > "$LOG_FILE" 2>&1
